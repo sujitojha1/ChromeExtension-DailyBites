@@ -1,6 +1,6 @@
 async function loadHackerNews() {
   const hnList = document.getElementById('hn-list');
-  hnList.innerHTML = '<li>Loading...</li>';
+  hnList.innerHTML = '<tr><td>Loading...</td></tr>';
   try {
     const response = await fetch('https://news.ycombinator.com/');
     const html = await response.text();
@@ -19,23 +19,25 @@ async function loadHackerNews() {
       const storyId = storyRow.id;
       
       if (titleLink) {
-        const li = document.createElement('li');
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
         const a = document.createElement('a');
         a.href = titleLink.href || `https://news.ycombinator.com/item?id=${storyId}`;
         a.textContent = titleLink.textContent;
         a.target = '_blank';
-        li.appendChild(a);
-        hnList.appendChild(li);
+        td.appendChild(a);
+        tr.appendChild(td);
+        hnList.appendChild(tr);
       }
     }
   } catch (e) {
-    hnList.innerHTML = '<li>Error loading stories</li>';
+    hnList.innerHTML = '<tr><td>Error loading stories</td></tr>';
   }
 }
 
 async function loadHuggingFace() {
   const hfList = document.getElementById('hf-list');
-  hfList.innerHTML = '<li>Loading...</li>';
+  hfList.innerHTML = '<tr><td colspan="2">Loading...</td></tr>';
   try {
     const response = await fetch('https://huggingface.co/papers');
     const html = await response.text();
@@ -56,17 +58,18 @@ async function loadHuggingFace() {
     }
     
     hfList.innerHTML = '';
-    
+
     let count = 0;
     for (const link of paperLinks) {
       if (count >= 2) break;
-      
+
       const title = link.textContent.trim();
-      if (title && title.length > 10) { // Filter out very short titles
-        const li = document.createElement('li');
+      if (title && title.length > 10) {
+        const tr = document.createElement('tr');
+        const titleTd = document.createElement('td');
+        const pdfTd = document.createElement('td');
+
         const a = document.createElement('a');
-        
-        // Get the href attribute directly and ensure it's a proper Hugging Face URL
         const href = link.getAttribute('href');
         if (href) {
           if (href.startsWith('http')) {
@@ -77,31 +80,57 @@ async function loadHuggingFace() {
             a.href = `https://huggingface.co/papers/${href}`;
           }
         } else {
-          // Fallback if no href found
           a.href = 'https://huggingface.co/papers';
         }
-        
+
         a.textContent = title;
         a.target = '_blank';
-        li.appendChild(a);
-        hfList.appendChild(li);
+        titleTd.appendChild(a);
+
+        try {
+          const paperResp = await fetch(a.href);
+          const paperHtml = await paperResp.text();
+          const parser = new DOMParser();
+          const paperDoc = parser.parseFromString(paperHtml, 'text/html');
+          const pdfLink = paperDoc.querySelector('a[href$=".pdf"], a[href*="arxiv.org/pdf"]');
+          if (pdfLink && pdfLink.href) {
+            const pdfA = document.createElement('a');
+            pdfA.href = pdfLink.href;
+            pdfA.textContent = 'PDF';
+            pdfA.target = '_blank';
+            pdfA.download = '';
+            pdfTd.appendChild(pdfA);
+          } else {
+            pdfTd.textContent = 'N/A';
+          }
+        } catch (err) {
+          pdfTd.textContent = 'N/A';
+        }
+
+        tr.appendChild(titleTd);
+        tr.appendChild(pdfTd);
+        hfList.appendChild(tr);
         count++;
       }
     }
     
     // If still no papers found, show a fallback with a link to the papers page
     if (count === 0) {
-      const li = document.createElement('li');
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 2;
       const a = document.createElement('a');
       a.href = 'https://huggingface.co/papers';
       a.textContent = 'View Papers on Hugging Face';
       a.target = '_blank';
-      li.appendChild(a);
-      hfList.appendChild(li);
+      td.appendChild(a);
+      tr.appendChild(td);
+      hfList.appendChild(tr);
     }
   } catch (e) {
     // Fallback on error - show a link to the papers page
-    hfList.innerHTML = '<li><a href="https://huggingface.co/papers" target="_blank">View Papers on Hugging Face</a></li>';
+    hfList.innerHTML = '<tr><td colspan="2"><a href="https://huggingface.co/papers" target="_blank">' +
+      'View Papers on Hugging Face</a></td></tr>';
   }
 }
 

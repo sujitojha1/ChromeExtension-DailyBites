@@ -20,36 +20,40 @@ header h1 {
   margin: 0;
 }
 
-.content-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 12px;
+
+.container {
+  display: flex;
+  gap: 12px;
 }
 
-.content-table th,
-.content-table td {
+.box {
+  flex: 1;
   background: rgba(255, 255, 255, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   backdrop-filter: blur(10px);
   padding: 12px;
-  vertical-align: top;
 }
 
-.content-table th {
+.box h2 {
   font-size: 14px;
   color: #ffffff;
   font-weight: 600;
+  margin-top: 0;
 }
 
-ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
+.items {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-li {
-  margin-bottom: 6px;
+.items td {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.items tr:last-child td {
+  border-bottom: none;
 }
 
 a {
