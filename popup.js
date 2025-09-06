@@ -64,10 +64,11 @@ async function loadHuggingFace() {
       if (count >= 2) break;
 
       const title = link.textContent.trim();
-      if (title && title.length > 10) {
-        const tr = document.createElement('tr');
-        const titleTd = document.createElement('td');
-        const pdfTd = document.createElement('td');
+      if (!title) continue;
+
+      const tr = document.createElement('tr');
+      const titleTd = document.createElement('td');
+      const pdfTd = document.createElement('td');
 
         const a = document.createElement('a');
         const href = link.getAttribute('href');
@@ -107,11 +108,10 @@ async function loadHuggingFace() {
           pdfTd.textContent = 'N/A';
         }
 
-        tr.appendChild(titleTd);
-        tr.appendChild(pdfTd);
-        hfList.appendChild(tr);
-        count++;
-      }
+      tr.appendChild(titleTd);
+      tr.appendChild(pdfTd);
+      hfList.appendChild(tr);
+      count++;
     }
     
     // If still no papers found, show a fallback with a link to the papers page
