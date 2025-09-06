@@ -59,54 +59,58 @@ async function loadHuggingFace() {
     
     hfList.innerHTML = '';
 
+    // Track unique paper URLs to avoid duplicates
+    const seen = new Set();
     let count = 0;
+
     for (const link of paperLinks) {
       if (count >= 2) break;
 
+      let href = link.getAttribute('href');
       const title = link.textContent.trim();
-      if (!title) continue;
+      if (!title || !href) continue;
+
+      // Normalize the URL
+      if (href.startsWith('http')) {
+        // use as is
+      } else if (href.startsWith('/')) {
+        href = `https://huggingface.co${href}`;
+      } else {
+        href = `https://huggingface.co/papers/${href}`;
+      }
+
+      if (seen.has(href)) continue;
+      seen.add(href);
 
       const tr = document.createElement('tr');
       const titleTd = document.createElement('td');
       const pdfTd = document.createElement('td');
 
-        const a = document.createElement('a');
-        const href = link.getAttribute('href');
-        if (href) {
-          if (href.startsWith('http')) {
-            a.href = href;
-          } else if (href.startsWith('/')) {
-            a.href = `https://huggingface.co${href}`;
-          } else {
-            a.href = `https://huggingface.co/papers/${href}`;
-          }
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = title;
+      a.target = '_blank';
+      titleTd.appendChild(a);
+
+      try {
+        const paperResp = await fetch(href);
+        const paperHtml = await paperResp.text();
+        const parser = new DOMParser();
+        const paperDoc = parser.parseFromString(paperHtml, 'text/html');
+        const pdfLink = paperDoc.querySelector('a[href$=".pdf"], a[href*="arxiv.org/pdf"]');
+        if (pdfLink && pdfLink.href) {
+          const pdfA = document.createElement('a');
+          pdfA.href = pdfLink.href;
+          pdfA.textContent = 'PDF';
+          pdfA.target = '_blank';
+          pdfA.download = '';
+          pdfTd.appendChild(pdfA);
         } else {
-          a.href = 'https://huggingface.co/papers';
-        }
-
-        a.textContent = title;
-        a.target = '_blank';
-        titleTd.appendChild(a);
-
-        try {
-          const paperResp = await fetch(a.href);
-          const paperHtml = await paperResp.text();
-          const parser = new DOMParser();
-          const paperDoc = parser.parseFromString(paperHtml, 'text/html');
-          const pdfLink = paperDoc.querySelector('a[href$=".pdf"], a[href*="arxiv.org/pdf"]');
-          if (pdfLink && pdfLink.href) {
-            const pdfA = document.createElement('a');
-            pdfA.href = pdfLink.href;
-            pdfA.textContent = 'PDF';
-            pdfA.target = '_blank';
-            pdfA.download = '';
-            pdfTd.appendChild(pdfA);
-          } else {
-            pdfTd.textContent = 'N/A';
-          }
-        } catch (err) {
           pdfTd.textContent = 'N/A';
         }
+      } catch (err) {
+        pdfTd.textContent = 'N/A';
+      }
 
       tr.appendChild(titleTd);
       tr.appendChild(pdfTd);
