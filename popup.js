@@ -44,8 +44,17 @@ async function loadHuggingFace() {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     
-    // Find paper links - they're typically in cards or list items
-    const paperLinks = doc.querySelectorAll('a[href*="/papers/"]');
+    // Find paper links - try multiple selectors
+    let paperLinks = doc.querySelectorAll('a[href*="/papers/"]');
+    
+    // If no papers found, try alternative selectors
+    if (paperLinks.length === 0) {
+      paperLinks = doc.querySelectorAll('a[href*="arxiv.org"]');
+    }
+    if (paperLinks.length === 0) {
+      paperLinks = doc.querySelectorAll('a[href*="papers"]');
+    }
+    
     hfList.innerHTML = '';
     
     let count = 0;
@@ -56,7 +65,22 @@ async function loadHuggingFace() {
       if (title && title.length > 10) { // Filter out very short titles
         const li = document.createElement('li');
         const a = document.createElement('a');
-        a.href = link.href.startsWith('http') ? link.href : `https://huggingface.co${link.href}`;
+        
+        // Get the href attribute directly and ensure it's a proper Hugging Face URL
+        const href = link.getAttribute('href');
+        if (href) {
+          if (href.startsWith('http')) {
+            a.href = href;
+          } else if (href.startsWith('/')) {
+            a.href = `https://huggingface.co${href}`;
+          } else {
+            a.href = `https://huggingface.co/papers/${href}`;
+          }
+        } else {
+          // Fallback if no href found
+          a.href = 'https://huggingface.co/papers';
+        }
+        
         a.textContent = title;
         a.target = '_blank';
         li.appendChild(a);
@@ -65,11 +89,19 @@ async function loadHuggingFace() {
       }
     }
     
+    // If still no papers found, show a fallback with a link to the papers page
     if (count === 0) {
-      hfList.innerHTML = '<li>No papers found</li>';
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = 'https://huggingface.co/papers';
+      a.textContent = 'View Papers on Hugging Face';
+      a.target = '_blank';
+      li.appendChild(a);
+      hfList.appendChild(li);
     }
   } catch (e) {
-    hfList.innerHTML = '<li>Error loading papers</li>';
+    // Fallback on error - show a link to the papers page
+    hfList.innerHTML = '<li><a href="https://huggingface.co/papers" target="_blank">View Papers on Hugging Face</a></li>';
   }
 }
 
