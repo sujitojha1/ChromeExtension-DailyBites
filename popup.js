@@ -2,19 +2,31 @@ async function loadHackerNews() {
   const hnList = document.getElementById('hn-list');
   hnList.innerHTML = '<li>Loading...</li>';
   try {
-    const ids = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
-      .then(r => r.json());
+    const response = await fetch('https://news.ycombinator.com/');
+    const html = await response.text();
+    
+    // Parse the HTML to extract story information
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Find story rows (they have class 'athing')
+    const storyRows = doc.querySelectorAll('.athing');
     hnList.innerHTML = '';
-    for (const id of ids.slice(0, 3)) {
-      const story = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
-        .then(r => r.json());
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = story.url || `https://news.ycombinator.com/item?id=${id}`;
-      a.textContent = story.title;
-      a.target = '_blank';
-      li.appendChild(a);
-      hnList.appendChild(li);
+    
+    for (let i = 0; i < Math.min(3, storyRows.length); i++) {
+      const storyRow = storyRows[i];
+      const titleLink = storyRow.querySelector('.titleline a');
+      const storyId = storyRow.id;
+      
+      if (titleLink) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = titleLink.href || `https://news.ycombinator.com/item?id=${storyId}`;
+        a.textContent = titleLink.textContent;
+        a.target = '_blank';
+        li.appendChild(a);
+        hnList.appendChild(li);
+      }
     }
   } catch (e) {
     hnList.innerHTML = '<li>Error loading stories</li>';
@@ -25,19 +37,37 @@ async function loadHuggingFace() {
   const hfList = document.getElementById('hf-list');
   hfList.innerHTML = '<li>Loading...</li>';
   try {
-    const res = await fetch('https://huggingface.co/api/papers?limit=2');
-    const json = await res.json();
-    const papers = Array.isArray(json) ? json : (json.papers || []);
+    const response = await fetch('https://huggingface.co/papers');
+    const html = await response.text();
+    
+    // Parse the HTML to extract paper information
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Find paper links - they're typically in cards or list items
+    const paperLinks = doc.querySelectorAll('a[href*="/papers/"]');
     hfList.innerHTML = '';
-    papers.slice(0, 2).forEach(paper => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = paper.url || paper.link || `https://huggingface.co/papers/${paper.id || paper.paperId || ''}`;
-      a.textContent = paper.title || paper.paper_title || 'Untitled';
-      a.target = '_blank';
-      li.appendChild(a);
-      hfList.appendChild(li);
-    });
+    
+    let count = 0;
+    for (const link of paperLinks) {
+      if (count >= 2) break;
+      
+      const title = link.textContent.trim();
+      if (title && title.length > 10) { // Filter out very short titles
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = link.href.startsWith('http') ? link.href : `https://huggingface.co${link.href}`;
+        a.textContent = title;
+        a.target = '_blank';
+        li.appendChild(a);
+        hfList.appendChild(li);
+        count++;
+      }
+    }
+    
+    if (count === 0) {
+      hfList.innerHTML = '<li>No papers found</li>';
+    }
   } catch (e) {
     hfList.innerHTML = '<li>Error loading papers</li>';
   }
