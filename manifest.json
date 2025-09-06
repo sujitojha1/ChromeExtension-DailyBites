@@ -4,10 +4,10 @@
   "version": "1.0",
   "description": "Displays top 3 Hacker News links and top 2 Hugging Face papers.",
   "icons": {
-    "16": "icon16.svg",
-    "32": "icon32.svg",
-    "48": "icon48.svg",
-    "128": "icon128.svg"
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   },
   "action": {
     "default_title": "DailyBites",
