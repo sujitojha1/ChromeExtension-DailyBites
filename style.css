@@ -1,46 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
 body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  width: 340px;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+  width: 360px;
   margin: 0;
-  padding: 0;
-  background-color: #f5f5f5;
+  padding: 16px;
+  background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+  color: #ffffff;
 }
-section {
-  background: #ffffff;
+
+header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.content-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 12px;
+}
+
+.content-table th,
+.content-table td {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 12px;
-  padding: 12px 16px;
+  backdrop-filter: blur(10px);
+  padding: 12px;
+  vertical-align: top;
 }
-h2 {
-  font-size: 16px;
-  margin: 0 0 8px 0;
-  color: #333333;
+
+.content-table th {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 600;
 }
+
 ul {
   list-style: none;
   padding-left: 0;
   margin: 0;
 }
+
 li {
   margin-bottom: 6px;
 }
+
 a {
   text-decoration: none;
   color: #1a73e8;
 }
+
 .btn {
   display: inline-block;
-  background: #ff6600;
+  background: rgba(255, 102, 0, 0.8);
   color: #ffffff;
   padding: 8px 16px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
 }
+
 .btn:hover {
-  background: #e65c00;
+  background: rgba(230, 92, 0, 0.8);
 }
+
 .center {
   text-align: center;
   margin-top: 8px;

@@ -6,17 +6,30 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <section>
-    <h2>Hacker News</h2>
-    <ul id="hn-list"><li>Loading...</li></ul>
-    <div class="center">
-      <a href="https://news.ycombinator.com/" target="_blank" class="btn">View All Stories</a>
-    </div>
-  </section>
-  <section>
-    <h2>Hugging Face Papers</h2>
-    <ul id="hf-list"><li>Loading...</li></ul>
-  </section>
+  <header>
+    <h1>DailyBites</h1>
+  </header>
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>Hacker News</th>
+        <th>Hugging Face Papers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <ul id="hn-list"><li>Loading...</li></ul>
+          <div class="center">
+            <a href="https://news.ycombinator.com/" target="_blank" class="btn">View All Stories</a>
+          </div>
+        </td>
+        <td>
+          <ul id="hf-list"><li>Loading...</li></ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
   <script src="popup.js"></script>
 </body>
 </html>
