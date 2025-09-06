@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "DailyBites",
+  "version": "1.0",
+  "description": "Displays top 3 Hacker News links and top 2 Hugging Face papers.",
+  "action": {
+    "default_title": "DailyBites",
+    "default_popup": "popup.html"
+  },
+  "host_permissions": [
+    "https://hacker-news.firebaseio.com/*",
+    "https://huggingface.co/*"
+  ]
+}
